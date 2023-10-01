@@ -20,17 +20,19 @@ type ExpressionStatement struct {
 	Expression Expression
 }
 
-type Identifier 
+type Identifier struct {
+	Token token.Token // The token.IDENT token
+	Value string
+}
 
 // Statements: There are two statements in monkeylang: `let` and `return`
 // Statements differ from expressions because they have no result value.
 
 type LetStatement struct {
-	Name *Identifier
+	Name  *Identifier
 	Value Expression
 }
 
 type ReturnStatement struct {
 	ReturnValue Expression
 }
-
