@@ -1,10 +1,10 @@
 package ast
 
-import "go/token"
+import "fiesta-compiler/token"
 
 type Node interface {
 	TokenLiteral() string
-	String() string
+	// String() string
 }
 
 type Expression interface {
@@ -13,6 +13,10 @@ type Expression interface {
 
 type Statement interface {
 	Node
+}
+
+type Program struct {
+	Statements []Statement
 }
 
 type ExpressionStatement struct {
@@ -29,10 +33,33 @@ type Identifier struct {
 // Statements differ from expressions because they have no result value.
 
 type LetStatement struct {
+	Token token.Token
 	Name  *Identifier
 	Value Expression
 }
 
 type ReturnStatement struct {
+	Literal     token.Token // The token.RETURN token
 	ReturnValue Expression
 }
+
+/*
+Methods
+*/
+
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	}
+	return ""
+}
+
+func (ls *LetStatement) TokenLiteral() string {
+	return ls.Token.Literal
+}
+func (ls *LetStatement) statementNode() {}
+
+func (ls *Identifier) TokenLiteral() string {
+	return ls.Token.Literal
+}
+func (ls *Identifier) expressionNode() {}

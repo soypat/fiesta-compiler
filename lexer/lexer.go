@@ -1,6 +1,8 @@
 package lexer
 
-import "fiesta-compiler/token"
+import (
+	"fiesta-compiler/token"
+)
 
 type Lexer struct {
 	input        string
@@ -18,10 +20,12 @@ func New(input string) *Lexer {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+	l.skipWhitespace()
 	ch := l.ch
 	switch ch {
 	// Case for single character tokens:
-	case '=', ';', '(', ')', '{', '}', '+', '-', ',':
+	case '=', ';', '(', ')', '{', '}', '+', '-', ',',
+		'<', '>', '!', '*', '/':
 		tok = newToken(token.TokenType(ch), ch)
 	case 0:
 		tok.Literal = ""
@@ -30,7 +34,7 @@ func (l *Lexer) NextToken() token.Token {
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
-			return tok
+			return tok // Early return is necessary since readChar is called within readIdentifier.
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
@@ -76,10 +80,20 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
+func (l *Lexer) skipWhitespace() {
+	for isWhitespace(l.ch) {
+		l.readChar()
+	}
+}
+
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
 
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r'
 }
