@@ -72,7 +72,7 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 func (p *Parser) peekTokenIs(t token.TokenType) bool { return p.peekToken.Type == t }
 func (p *Parser) curTokenIs(t token.TokenType) bool  { return p.curToken.Type == t }
 func (p *Parser) skipTo(t token.TokenType) {
-	for !p.curTokenIs(t) {
+	for !p.curTokenIs(t) && !p.curTokenIs(token.EOF) {
 		p.nextToken()
 	}
 }
