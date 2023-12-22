@@ -39,7 +39,7 @@ type LetStatement struct {
 }
 
 type ReturnStatement struct {
-	Literal     token.Token // The token.RETURN token
+	Token       token.Token // The token.RETURN token
 	ReturnValue Expression
 }
 
@@ -54,12 +54,11 @@ func (p *Program) TokenLiteral() string {
 	return ""
 }
 
-func (ls *LetStatement) TokenLiteral() string {
-	return ls.Token.Literal
-}
-func (ls *LetStatement) statementNode() {}
+func (ls *Identifier) expressionNode()      {}
+func (ls *Identifier) TokenLiteral() string { return ls.Token.Literal }
 
-func (ls *Identifier) TokenLiteral() string {
-	return ls.Token.Literal
-}
-func (ls *Identifier) expressionNode() {}
+func (ls *LetStatement) statementNode()       {}
+func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }

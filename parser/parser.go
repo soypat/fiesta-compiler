@@ -4,10 +4,12 @@ import (
 	"fiesta-compiler/ast"
 	"fiesta-compiler/lexer"
 	"fiesta-compiler/token"
+	"fmt"
 )
 
 type Parser struct {
 	l         *lexer.Lexer
+	errors    []error
 	curToken  token.Token
 	peekToken token.Token
 }
@@ -18,6 +20,10 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.nextToken()
 	return p
+}
+
+func (p *Parser) Errors() []error {
+	return p.errors
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
@@ -37,6 +43,8 @@ func (p *Parser) parseStatment() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatment()
+	case token.RETURN:
+		return p.parseReturnStatement()
 	default:
 		return nil
 	}
@@ -61,8 +69,26 @@ func (p *Parser) parseLetStatment() ast.Statement {
 	return stmt
 }
 
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{Token: p.curToken}
+
+	p.nextToken()
+
+	// We're skipping expressions until semicolon.
+	p.skipTo(token.SEMICOLON)
+
+	return stmt
+}
+
+func (p *Parser) peekError(t token.TokenType) {
+	p.errors = append(p.errors, fmt.Errorf(
+		"expected next token to be %s, got %s instead", t, p.peekToken.Type,
+	))
+}
+
 func (p *Parser) expectPeek(t token.TokenType) bool {
 	if !p.peekTokenIs(t) {
+		p.peekError(t)
 		return false // Not what we expected.
 	}
 	p.nextToken()

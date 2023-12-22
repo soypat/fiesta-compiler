@@ -35,6 +35,10 @@ const (
 	IF       = "IF"
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
+
+	// Comparison operators
+	EQ  = "=="
+	NEQ = "!="
 )
 
 type Token struct {

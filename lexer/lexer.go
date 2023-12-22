@@ -23,9 +23,23 @@ func (l *Lexer) NextToken() token.Token {
 	l.skipWhitespace()
 	ch := l.ch
 	switch ch {
+	case '!':
+		if l.peekChar() == '=' {
+			tok = token.Token{Type: token.NEQ, Literal: "!="}
+			l.readChar()
+		} else {
+			tok = newToken(token.BANG, ch)
+		}
+	case '=':
+		if l.peekChar() == '=' {
+			tok = token.Token{Type: token.EQ, Literal: "=="}
+			l.readChar()
+		} else {
+			tok = newToken(token.ASSIGN, ch)
+		}
 	// Case for single character tokens:
-	case '=', ';', '(', ')', '{', '}', '+', '-', ',',
-		'<', '>', '!', '*', '/':
+	case ';', '(', ')', '{', '}', '+', '-', ',',
+		'<', '>', '*', '/':
 		tok = newToken(token.TokenType(ch), ch)
 	case 0:
 		tok.Literal = ""
@@ -84,6 +98,15 @@ func (l *Lexer) readNumber() string {
 func (l *Lexer) skipWhitespace() {
 	for isWhitespace(l.ch) {
 		l.readChar()
+	}
+}
+
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		// ASCII code 0 is the "NUL" character
+		return 0
+	} else {
+		return l.input[l.readPosition]
 	}
 }
 
