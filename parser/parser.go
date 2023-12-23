@@ -50,7 +50,7 @@ func (p *Parser) parseStatment() ast.Statement {
 	}
 }
 
-func (p *Parser) parseLetStatment() ast.Statement {
+func (p *Parser) parseLetStatment() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: p.curToken}
 
 	if !p.expectPeek(token.IDENT) {
