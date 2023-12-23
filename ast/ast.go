@@ -3,6 +3,7 @@ package ast
 import (
 	"bytes"
 	"fiesta-compiler/token"
+	"strconv"
 )
 
 type Node interface {
@@ -34,6 +35,11 @@ type Identifier struct {
 	Value string
 }
 
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
 // Statements: There are two statements in monkeylang: `let` and `return`
 // Statements differ from expressions because they have no result value.
 
@@ -62,6 +68,10 @@ func (p *Program) TokenLiteral() string {
 func (id *Identifier) expressionNode()      {}
 func (id *Identifier) TokenLiteral() string { return id.Token.Literal }
 func (id *Identifier) String() string       { return id.Value }
+
+func (id *IntegerLiteral) expressionNode()      {}
+func (id *IntegerLiteral) TokenLiteral() string { return id.Token.Literal }
+func (id *IntegerLiteral) String() string       { return strconv.Itoa(int(id.Value)) }
 
 func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }

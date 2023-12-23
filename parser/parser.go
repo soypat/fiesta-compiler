@@ -5,6 +5,7 @@ import (
 	"fiesta-compiler/lexer"
 	"fiesta-compiler/token"
 	"fmt"
+	"strconv"
 )
 
 // Pratt parsing functions. a.k.a: Semantic Code.
@@ -37,6 +38,8 @@ func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l}
 	p.pfxFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+
 	p.infxFns = make(map[token.TokenType]infixParseFn)
 
 	// Read two tokens so peek and current both set.
@@ -134,6 +137,18 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	leftExp := prefix()
 	return leftExp
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{Token: p.curToken}
+
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		p.errors = append(p.errors, err)
+		return nil
+	}
+	lit.Value = value
+	return lit
 }
 
 func (p *Parser) peekError(t token.TokenType) {
